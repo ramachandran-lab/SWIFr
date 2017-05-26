@@ -1,0 +1,7 @@
+stat1	stat1	neutral	sweep
+Fst	XP-EHH	10	4
+Fst	iHS	9	2
+Fst	DDAF	10	4
+XP-EHH	iHS	8	2
+XP-EHH	DDAF	10	4
+iHS	DDAF	10	2
