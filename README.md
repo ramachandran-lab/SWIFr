@@ -154,7 +154,7 @@ application_example/ in this repository has classified files generated from the 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Required for --apply  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.g. see calibration/example/test_for_application  
 
-**Note: Either --train or --apply must be specified. calibration.py only supports binary classification probabilities.**  
+**Note: Either --train or --apply must be specified. Currently, calibration functionality only supports binary classification probabilities.**  
 
 #### Examples:  
 
