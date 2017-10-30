@@ -129,8 +129,39 @@ application_example/ in this repository has classified files generated from the 
 
 
 
+### Calibrating Probabilities:
+#### Usage:  
+\>python calibration.py
 
+#### Command Line Options:
+--frac1 \<float\>: for calibration purposes, fraction of data points that come from class 1 (sweep).  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Required (default: 0.1)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.g. --frac1 0.001  
 
+--train \<bool\>: use to learn calibration function from training data  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Requires --input_train  
+
+--input_train \<string\>: file containing training data for calibration. Two tab-delimited columns, no header, each line is a datapoint. First column contains labels (e.g. 0 for neutral, 1 for sweep) and second column contains raw (un-calibrated) probabilities.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Required for --train  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.g. see calibration/example/test_for_calibration.txt  
+
+--apply \<bool\>: use to apply calibration learned with --train to a new set of probabilities.    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Requires --input_apply  
+
+--input_apply \<string\>: file containing probabilities to be calibrated. Can have any number of tab-delimited columns, with a header line. One column name must be "uncalibrated" and that column must contain the probabilities to be calibrated. Other columns may have rsids, chromosome numbers, etc...    
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Required for --apply  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.g. see calibration/example/test_for_application  
+
+**Note: either --train or --apply must be specified.**  
+
+#### Examples:  
+
+\>python calibration.py --frac1 0.1 --train --input_train calibration/example/test_for_calibration.txt  
+
+\>python calibration.py --frac1 0.1 --apply --input_apply calibration/example/test_for_application  
+
+#### Output:  
+calibration.py will create a directory called calibration/ if one does not already exist. With the --train flag, calibration.py will draw two reliability plots (before and after calibration) and will save them in pdf format in the calibration/ directory. It will also save .p files that contain the values necessary for applying smoothed isotonic regression calibration to a new set of datapoints. With the --apply flag, calibration.py will create a new file in the calibration/ directory with the same name as the file provided with --input_apply, appended with "_calibrated". This file will contain all of the columns in the original file, plus a final column with column name "calibrated" that provides the new calibrated probabilities for each raw probability. For exapmles of all of these, see files in calibration/example/.
 
 
 
