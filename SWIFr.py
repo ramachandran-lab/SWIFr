@@ -20,7 +20,10 @@ class Stats():
 		self.stats = [line.split('\t')[0] for line in f]
 		self.stat2score = {s:-998 for s in self.stats}
 	def set_stat(self,stat,value):
-		self.stat2score[stat] = value
+		if stat in self.stats:
+			self.stat2score[stat] = value
+		else:
+			raise ValueError("INCORRECT STAT NAME")
 
 
 class AODE():
