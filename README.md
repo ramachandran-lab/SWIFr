@@ -154,7 +154,7 @@ application_example/ in this repository has classified files generated from the 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Required for --apply  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.g. see calibration/example/test_for_application  
 
-**Note: either --train or --apply must be specified.**  
+**Note: Either --train or --apply must be specified. Only binary classification probabilities are supported.**  
 
 #### Examples:  
 
