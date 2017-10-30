@@ -19,6 +19,8 @@ This directory contains the following:
 2. SWIFr.py - source code for applying SWIF(r), once trained, to a file with testing data
 3. example_2classes - example input and output for SWIF(r) trained on two classes ("neutral" and "sweep")
 4. example_3classes - example input and output for SWIF(r) trained on three classes ("neutral", "sweep_recent", and "sweep_old")
+5. calibration.py - source code for calibrating probabilities such as those calculated by SWIF(r)
+6. calibration/example - example input and output for calibration.py
 
 ### Training SWIF(r):
 
