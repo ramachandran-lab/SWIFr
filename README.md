@@ -1,11 +1,13 @@
-# SWIF(r)
+# SWIF(r): SWeep Inference Framework (controlling for correlation)
 
 SWIF(r) Version 1  
 Lauren Alpert Sugden, Ramachandran Lab, Brown University
 
-April 20, 2017
 
-Questions: Contact lauren_alpert@brown.edu
+Publication: Sugden, Lauren Alpert, Elizabeth G. Atkinson, Annie P. Fischer, Stephen Rong, Brenna M. Henn, and Sohini Ramachandran. "Localization of adaptive variants in human genomes using averaged one-dependence estimation." *Nature communications* 9, no. 1 (2018): 703.
+
+Questions: Contact lauren_alpert@brown.edu or post a git issue
+
 
 ### Software Requirements:  
 Python v2.7  
