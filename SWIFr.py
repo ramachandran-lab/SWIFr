@@ -34,18 +34,21 @@ class AODE():
 	or the other flag must be provided.
 	'''
 
-	def __init__(self,path2trained):
+	def __init__(self,path2trained,stats2use=[]):
 
 		if path2trained != '' and path2trained[-1] != '/':
 			path2trained += '/'
 		self.path2trained = path2trained
 
-		file = open(self.path2trained+'component_stats.txt','r')
-		f = file.read()
-		file.close()
-		f = f.strip().splitlines()
-		f = [x.strip() for x in f]
-		self.statlist = f
+		if len(stats2use) == 0:
+			file = open(self.path2trained+'component_stats.txt','r')
+			f = file.read()
+			file.close()
+			f = f.strip().splitlines()
+			f = [x.strip() for x in f]
+			self.statlist = f
+		else:
+			self.statlist = stats2use
 
 		self.num2stat = {i:self.statlist[i] for i in range(len(self.statlist))}
 		self.stat2num = {y:x for x,y in self.num2stat.items()}
@@ -197,7 +200,8 @@ class AODE():
 			L = line.strip().split('\t')
 			S = Stats(self.path2trained)
 			for stat in S.stats:
-				S.stat2score[stat] = float(L[stat2index[stat]])
+				#S.stat2score[stat] = float(L[stat2index[stat]])
+				S.set_stat(stat,float(L[stat2index[stat]]))
 			scenario_probs = A.aode(S,pivec)
 			outtext = line+'\t'
 			for i in range(len(pivec)):
@@ -220,12 +224,13 @@ if __name__ == '__main__':
 	parser.add_argument('--interactive',action='store_true',dest='interactive',default=False)
 	parser.add_argument('--file',action='store',dest='filename') #use instead of interactive mode to work on a whole file
 	parser.add_argument('--pi',action='store',nargs='+',default=['0.99999','0.00001']) #can use with either mode
+	parser.add_argument('--stats2use',action='store',nargs='+',default=[])
 	parser.add_argument('--outfile',action='store',default='')
 	args = parser.parse_args()
 
 
 
-	A = AODE(args.path2trained)
+	A = AODE(args.path2trained,args.stats2use)
 
 
 	
@@ -243,10 +248,10 @@ if __name__ == '__main__':
 				print 'p('+A.scenarios[i]+') = '+str(pivec[i])
 			if args.interactive:
 				S = Stats(args.path2trained)
-				for stat in S.stats:
+				for stat in A.statlist:
 					response = input("Value for "+stat+": ")
-					S.stat2score[stat] = float(response)
-			
+					#S.stat2score[stat] = float(response)
+					S.set_stat(stat,float(response))
 				scenario_probs = A.aode(S,pivec)
 				for i in range(len(A.scenarios)):
 					print 'Probability of '+A.scenarios[i]+': '+str(scenario_probs[i])
