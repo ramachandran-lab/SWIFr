@@ -107,6 +107,8 @@ If you wish to change the number of Gaussian mixture components based on the BIC
 
 --file \<string\>: use to calculate SWIF(r) on multiple sites, where argument is the filename (including relative path). File must be in the same tab-delimited format as simfile.txt above; any number of columns are allowed, as long as there is a column for each component statistic, and a header line that uses the names of the statistics exactly as they appear in component_stats.txt. Again, use -998 to denote any missing values. SWIFr.py will output a file with all of the columns from the original, plus n columns that record the prior value given upon input for each class, and n columns for the posterior probabilities for each class.  
 
+--stats2use \<stat1 stat2 ...\>: use if you want to run SWIF(r) with a subset of the statistics that were used to train. Make sure that statistic names listed match those used for trainings. Can be combined with either --interactive or --file. 
+
 --outfile \<string\>: specify file for output (including path). By default, output will be written to the same directory as the original file, with name \<filename\>_classified. Only use with --file.
 
 **Note: either --interactive or --file must be specified.**  
