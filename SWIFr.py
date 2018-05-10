@@ -199,7 +199,8 @@ class AODE():
 		for line in f:
 			L = line.strip().split('\t')
 			S = Stats(self.path2trained)
-			for stat in S.stats:
+			for stat in self.statlist:
+			#for stat in S.stats:
 				#S.stat2score[stat] = float(L[stat2index[stat]])
 				S.set_stat(stat,float(L[stat2index[stat]]))
 			scenario_probs = A.aode(S,pivec)
