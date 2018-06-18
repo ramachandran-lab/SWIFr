@@ -10,8 +10,6 @@ class AODE_train():
 	def __init__(self,args):
 		self.retrain = args.retrain
 
-
-
 		self.path2allstats = args.path2files
 		if self.path2allstats != '' and self.path2allstats[-1] != '/':
 			self.path2allstats += '/'
@@ -31,11 +29,16 @@ class AODE_train():
 		self.scenarios = [x.strip() for x in f.strip().splitlines()]
 
 
+
 		file = open(self.path2files+'component_stats.txt','r')
 		f = file.read()
 		file.close()
 		f = f.strip().splitlines()
-		self.statlist = [x.strip() for x in f]
+		allstats = [x.strip() for x in f]
+		if len(args.stats2use) == 0:
+			self.statlist = allstats
+		else:
+			self.statlist = [x for x in allstats if x in args.stats2use]
 
 		self.minscores = [[] for i in range(len(self.statlist))]
 		self.maxscores = [[] for i in range(len(self.statlist))]
@@ -286,8 +289,9 @@ class AODE_train():
 		for i in range(len(f)):
 			f[i] = f[i].strip().split('\t')
 			stat = f[i][0]
-			for j in range(len(self.scenarios)):
-				self.component_nums_1D[self.stat2num[stat]][j] = int(f[i][j+1])
+			if stat in self.statlist:
+				for j in range(len(self.scenarios)):
+					self.component_nums_1D[self.stat2num[stat]][j] = int(f[i][j+1])
 
 		file = open(self.path2AODE+'joint_component_nums','r')
 		f = file.read()
@@ -297,8 +301,9 @@ class AODE_train():
 			f[i] = f[i].strip().split('\t')
 			stat1 = f[i][0]
 			stat2 = f[i][1]
-			for j in range(len(self.scenarios)):
-				self.component_nums_2D[self.stat2num[stat1]][self.stat2num[stat2]][j] = int(f[i][j+2])
+			if stat1 in self.statlist and stat2 in self.statlist:
+				for j in range(len(self.scenarios)):
+					self.component_nums_2D[self.stat2num[stat1]][self.stat2num[stat2]][j] = int(f[i][j+2])
 
 		self.plot_contours()
 
@@ -316,6 +321,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--path',action='store',dest='path2files',default='') #path to all input files (simulations in a 'simulations' directory, and compstats, scenarios files)
 	parser.add_argument('--retrain',action='store_true',dest='retrain')
+	parser.add_argument('--stats2use',action='store',nargs='+',default=[]) #use to split training into parallel runs, only with --retrain
 
 	args = parser.parse_args()
 	A = AODE_train(args)
