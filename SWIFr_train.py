@@ -317,6 +317,7 @@ if __name__ == '__main__':
 	from matplotlib.mlab import bivariate_normal
 	from matplotlib.mlab import normpdf
 	import matplotlib.cm as cm 	
+	matplotlib.use('Agg')
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--path',action='store',dest='path2files',default='') #path to all input files (simulations in a 'simulations' directory, and compstats, scenarios files)
