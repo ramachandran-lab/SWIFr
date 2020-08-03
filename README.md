@@ -1,42 +1,40 @@
 # SWIF(r): SWeep Inference Framework (controlling for correlation)
 
-SWIF(r) Version 1  
-Lauren Alpert Sugden, Ramachandran Lab, Brown University
+SWIF(r) Version 2.0.2
+July 2020
+Lauren Alpert Sugden, Kaileigh Ahlquist, Joseph Paik, Ramachandran Lab, Brown University
 
+Publication: Sugden, Lauren Alpert, Elizabeth G. Atkinson, Annie P. Fischer, Stephen Rong, Brenna M. Henn, and Sohini Ramachandran. "Localization of adaptive variants in human genomes using averaged one-dependence estimation." Nature communications 9, no. 1 (2018): 703.
 
-Publication: Sugden, Lauren Alpert, Elizabeth G. Atkinson, Annie P. Fischer, Stephen Rong, Brenna M. Henn, and Sohini Ramachandran. "Localization of adaptive variants in human genomes using averaged one-dependence estimation." *Nature communications* 9, no. 1 (2018): 703.
+Questions: Contact lauren_alpert@brown.edu, kaileigh_ahlquist@brown.edu, joseph_paik@alumni.brown.edu or post a git issue.
 
-Questions: Contact lauren_alpert@brown.edu or post a git issue
+### Updates:  
+This version of SWIF(r) is an update to SWIF(r) Version 1 released in 2017. The new updates to SWIF(r) include:
 
+(1) Both Python2 and Python3 compatibility (tested with Python versions 2.7 <= x <= 3.7). 
 
-### Software Requirements:  
-Python v2.7  
-Matplotlib v1.7 (http://matplotlib.org/)  
-SciPy v0.16 (https://www.scipy.org/)  
-Scikit-learn v0.17 (http://scikit-learn.org/)
+(2) A convenient installation process for SWIF(r) via the pip package installer for Python.
 
-### Contents:
-This directory contains the following:
-1. SWIFr_train.py - source code for training SWIFr on a set of statistics calculated on simulated data
-2. SWIFr.py - source code for applying SWIF(r), once trained, to a file with testing data
-3. example_2classes - example input and output for SWIF(r) trained on two classes ("neutral" and "sweep")
-4. example_3classes - example input and output for SWIF(r) trained on three classes ("neutral", "sweep_recent", and "sweep_old")
-5. calibration.py - source code for calibrating probabilities such as those calculated by SWIF(r)
-6. calibration/example - example input and output for calibration.py
+### Installation:
+
+\> pip install swifr
+
+### Important Note for Training Examples:
+
+**Training examples in example_2classes/ and example_3classes/ are based on a toy dataset. The classifiers learned in these examples should not be used for real applications. Instead, use swifr_train to train the classifier on a complete set of user-supplied training examples.**
+
+If you wish to use the provided training examples to test SWIF(r), you can locate them inside the directory where the SWIF(r) package was downloaded on your local machine: **/path/to/swifr_pkg/test_data**.
 
 ### Training SWIF(r):
 
 #### Usage:  
-To train SWIF(r), run SWIFr_train.py with the --path flag pointing to the directory containing the input files.  
+To train SWIF(r), run swifr_train with the --path flag pointing to the directory containing the input files.  
 
 ###### Example:  
-\>python SWIFr_train.py --path example_2classes/ 
-
-
- 
+\>swifr_train --path example_2classes/ 
 
 #### Required Input Files:
-Note: the following files and directories must be in a single directory, the path to which will be passed to SWIFr_train.py using the flag --path. The directory must contain classes.txt, component_stats.txt, and a directory called simulations. The simulations directory must have a subdirectory with the same name as each entry in classes.txt. Each subdirectory should have a set of files to be used for training that class. Example directories can be found in example_2classes/ and example_3classes/.  
+Note: the following files and directories must be in a single directory, the path to which will be passed to swifr_train using the flag --path. The directory must contain classes.txt, component_stats.txt, and a directory called simulations. The simulations directory must have a subdirectory with the same name as each entry in classes.txt. Each subdirectory should have a set of files to be used for training that class. Example directories can be found in example_2classes/ and example_3classes/.  
 
 File hierarchy:  
 
@@ -84,19 +82,18 @@ File hierarchy:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see Output)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default: false  
 
-
 #### Output:
-SWIFr_train.py creates three directories:  AODE_params/ which contains the parameter files that SWIFr.py will use, component_statistic_distributions/ which contains illustrations of the learned marginal (1D) and joint (2D) distributions, and BIC_plots/ which contains Bayesian Information Criterion curves (https://en.wikipedia.org/wiki/Bayesian_information_criterion) that SWIF(r) uses to learn the number of components for the gaussian mixtures for each of the 1- and 2-dimensional component statistic distributions. The BIC balances model complexity with fit, so that the optimal number of components is the one that minimizes the BIC. SWIF(r) automatically chooses the number of components between 1 and 10 that defines this minimum. The number chosen is highlighted in pink in the pdf files in BIC_plots/.  
+The output of swifr_train creates three directories:  AODE_params/ which contains the parameter files that swifr_test will use, component_statistic_distributions/ which contains illustrations of the learned marginal (1D) and joint (2D) distributions, and BIC_plots/ which contains Bayesian Information Criterion curves (https://en.wikipedia.org/wiki/Bayesian_information_criterion) that SWIF(r) uses to learn the number of components for the gaussian mixtures for each of the 1- and 2-dimensional component statistic distributions. The BIC balances model complexity with fit, so that the optimal number of components is the one that minimizes the BIC. SWIF(r) automatically chooses the number of components between 1 and 10 that defines this minimum. The number chosen is highlighted in pink in the pdf files in BIC_plots/.  
 
-If you wish to change the number of Gaussian mixture components based on the BIC curves (filenames in BIC_plots/ contain the statistic or pair of statistics, and the class), you can edit the file joint_component_nums and/or marginal_component_nums in the AODE_params/ directory, then re-run SWIFr_train.py with the flag --retrain. This will regenerate the files in AODE_params/, BIC_plots/, and component_statistic_distributions/.  
+If you wish to change the number of Gaussian mixture components based on the BIC curves (filenames in BIC_plots/ contain the statistic or pair of statistics, and the class), you can edit the file joint_component_nums and/or marginal_component_nums in the AODE_params/ directory, then re-run swifr_train with the flag --retrain. This will regenerate the files in AODE_params/, BIC_plots/, and component_statistic_distributions/.  
 
 
 ### Running SWIF(r) on testing data:
 #### Usage:  
-\>python SWIFr.py
+\>swifr_test
 
 #### Command Line Options:
---path2trained \<string\>: relative path to the directory containing the input and output files from SWIFr_train.py (same as --path argument for SWIFr_train.py)  
+--path2trained \<string\>: relative path to the directory containing the input and output files from swifr_train (same as --path argument for swifr_train)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Required (default: '')  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.g. --path2trained example_2classes/  
 
@@ -105,7 +102,7 @@ If you wish to change the number of Gaussian mixture components based on the BIC
 
 --interactive \<bool\>: use to calculate posterior probabilities for a single site. You will be prompted for values for each of the component statistics, and the output will be a posterior probability for each class.  
 
---file \<string\>: use to calculate SWIF(r) on multiple sites, where argument is the filename (including relative path). File must be in the same tab-delimited format as simfile.txt above; any number of columns are allowed, as long as there is a column for each component statistic, and a header line that uses the names of the statistics exactly as they appear in component_stats.txt. Again, use -998 to denote any missing values. SWIFr.py will output a file with all of the columns from the original, plus n columns that record the prior value given upon input for each class, and n columns for the posterior probabilities for each class.  
+--file \<string\>: use to calculate SWIF(r) on multiple sites, where argument is the filename (including relative path). File must be in the same tab-delimited format as simfile.txt above; any number of columns are allowed, as long as there is a column for each component statistic, and a header line that uses the names of the statistics exactly as they appear in component_stats.txt. Again, use -998 to denote any missing values. swifr_test will output a file with all of the columns from the original, plus n columns that record the prior value given upon input for each class, and n columns for the posterior probabilities for each class.  
 
 --stats2use \<stat1 stat2 ...\>: use if you want to run SWIF(r) with a subset of the statistics that were used to train. Make sure that statistic names listed match those used for training. Can be combined with either --interactive or --file. 
 
@@ -116,7 +113,7 @@ If you wish to change the number of Gaussian mixture components based on the BIC
 #### Examples:  
 
 Interactive example:  
- >python SWIFr.py --path2trained example_2classes/ --interactive  
+ >swifr_test --path2trained example_2classes/ --interactive  
  >Value for Fst: 2.3  
  >Value for XP-EHH: 3.3  
  >Value for iHS: -2.5  
@@ -126,18 +123,14 @@ Interactive example:
 
 application_example/ in this repository has classified files generated from the following commands:  
 
-\> python SWIFr.py --path2trained example_3classes/ --pi 0.99998 0.00001 0.00001 --file application_example/test_block_3classes  
+\> swifr_test --path2trained example_3classes/ --pi 0.99998 0.00001 0.00001 --file application_example/test_block_3classes  
 
-\>python SWIFr.py --path2trained example_2classes/ --pi 0.99999 0.00001 --file application_example/test_block_2classes  
-
-
-**Please note: training examples in example_2classes/ and example_3classes/ are based on a toy dataset. The classifiers learned in these examples should not be used for real applications. Instead, use SWIFr_train.py to train the classifier on a complete set of user-supplied training examples.**
-
+\> swifr_test --path2trained example_2classes/ --pi 0.99999 0.00001 --file application_example/test_block_2classes  
 
 
 ### Calibrating Probabilities:
 #### Usage:  
-\>python calibration.py
+\> calibration
 
 #### Command Line Options:
 --frac1 \<float\>: for calibration purposes, fraction of data points that come from class 1 (sweep).  
@@ -162,12 +155,9 @@ application_example/ in this repository has classified files generated from the 
 
 #### Examples:  
 
-\>python calibration.py --frac1 0.1 --train --input_train calibration/example/test_for_calibration.txt  
+\>calibration --frac1 0.1 --train --input_train calibration/example/test_for_calibration.txt  
 
-\>python calibration.py --frac1 0.1 --apply --input_apply calibration/example/test_for_application  
+\>calibration --frac1 0.1 --apply --input_apply calibration/example/test_for_application  
 
 #### Output:  
-calibration.py will create a directory called calibration/ if one does not already exist. With the --train flag, calibration.py will draw two reliability plots (before and after calibration) and will save them in pdf format in the calibration/ directory. It will also save .p files that contain the values necessary for applying smoothed isotonic regression calibration to a new set of datapoints. With the --apply flag, calibration.py will create a new file in the calibration/ directory with the same name as the file provided with --input_apply, appended with "_calibrated". This file will contain all of the columns in the original file, plus a final column with column name "calibrated" that provides the new calibrated probabilities for each raw probability. For examples of all of these, see files in calibration/example/.
-
-
-
+calibration will create a directory called calibration/ if one does not already exist. With the --train flag, calibration will draw two reliability plots (before and after calibration) and will save them in pdf format in the calibration/ directory. It will also save .p files that contain the values necessary for applying smoothed isotonic regression calibration to a new set of datapoints. With the --apply flag, calibration will create a new file in the calibration/ directory with the same name as the file provided with --input_apply, appended with "_calibrated". This file will contain all of the columns in the original file, plus a final column with column name "calibrated" that provides the new calibrated probabilities for each raw probability. For examples of all of these, see files in calibration/example/.
