@@ -91,8 +91,8 @@ If you wish to change the number of Gaussian mixture components based on the BIC
 
 
 ### Running SWIF(r) on testing data:
-#### Usage:  
-\>swifr_test
+#### Usage (note that for version 1, use swifr_test):  
+\>swifr
 
 #### Command Line Options:
 --path2trained \<string\>: relative path to the directory containing the input and output files from swifr_train (same as --path argument for swifr_train)  
@@ -115,7 +115,7 @@ If you wish to change the number of Gaussian mixture components based on the BIC
 #### Examples:  
 
 Interactive example:  
- >swifr_test --path2trained example_2classes/ --interactive  
+ >swifr --path2trained example_2classes/ --interactive  
  >Value for Fst: 2.3  
  >Value for XP-EHH: 3.3  
  >Value for iHS: -2.5  
@@ -125,9 +125,9 @@ Interactive example:
 
 application_example/ in this repository has classified files generated from the following commands:  
 
-\> swifr_test --path2trained example_3classes/ --pi 0.99998 0.00001 0.00001 --file application_example/test_block_3classes  
+\> swifr --path2trained example_3classes/ --pi 0.99998 0.00001 0.00001 --file application_example/test_block_3classes  
 
-\> swifr_test --path2trained example_2classes/ --pi 0.99999 0.00001 --file application_example/test_block_2classes  
+\> swifr --path2trained example_2classes/ --pi 0.99999 0.00001 --file application_example/test_block_2classes  
 
 
 ### Calibrating Probabilities:
