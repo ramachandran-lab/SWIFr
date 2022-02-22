@@ -86,30 +86,39 @@ class AODE(object):
     def aode(self,stats,pi):
         #pi must have length len(scenarios)
         numerators = [[] for i in range(len(self.scenarios))]
+        raw_nums = [[] for i in range(len(self.scenarios))]
         denominators = []
-
+        ode_num_dicts = {}
+        for i in range(len(self.scenarios)):
+            ode_num_dicts[self.scenarios[i]]=dict()
         for keystat in self.statlist:
-            ps,nums,denom = self.ode(keystat,stats,pi)
-            if ps != 'n/a':
-                for i in range(len(self.scenarios)):
+            ps,nums,denom,raw = self.ode(keystat,stats,pi)
+            for i in range(len(self.scenarios)):
+                if ps != 'n/a':
+                    ode_num_dicts[self.scenarios[i]][keystat]=nums[i]
                     numerators[i].append(nums[i])
-                denominators.append(denom)
+                    raw_nums[i].append(raw[i])
+                else:
+                    ode_num_dicts[self.scenarios[i]][keystat]='-998'
+            denominators.append(denom)
+        aoderaw = [sum(raw_nums[i]) for i in range(len(self.scenarios))]
         if sum(denominators) > 0:
             aodeposteriors = [float(sum(numerators[i]))/sum(denominators) for i in range(len(self.scenarios))]
-            return aodeposteriors
+            return aodeposteriors, aoderaw, ode_num_dicts
         else:
-            return [0 for i in range(len(self.scenarios))]
+            return [0 for i in range(len(self.scenarios))], aoderaw, ode_num_dicts
 
     def ode(self,keystat,stats,pi):
         score = stats.stat2score[keystat]
         if score == -998:
-            return 'n/a',0,0
+            return 'n/a',0,0,0
         else:
             MARGS = self.MARGINALS[self.stat2num[keystat]]
             Likelihoods = []
             for i in range(len(self.scenarios)):
                 M = MARGS[i]
                 Likelihoods.append(self.GMM_pdf(M,score))
+
             for stat in self.statlist:
                 if stat != keystat:
                     score2 = stats.stat2score[stat]
@@ -125,12 +134,15 @@ class AODE(object):
             numerators = [0 for i in range(len(self.scenarios))]
             for i in range(len(self.scenarios)):
                 numerators[i] = float(pi[i]*Likelihoods[i])
+            even_raw_aode = [0 for i in range(len(self.scenarios))]
+            for i in range(len(self.scenarios)):
+                even_raw_aode[i] = float(0.5*Likelihoods[i])
             denominator = sum(numerators)
             if denominator == 0:                
-                return [0 for i in range(len(numerators))],numerators,denominator
+                return [0 for i in range(len(numerators))],numerators,denominator, Likelihoods
             else:
                 posteriors = [float(numerators[i])/denominator for i in range(len(numerators))]
-                return posteriors, numerators, denominator
+                return posteriors, numerators, denominator, even_raw_aode
 
 
     
@@ -148,6 +160,15 @@ class AODE(object):
         u = float(x-mu)/sigma
         y = (old_div(1,(math.sqrt(2*math.pi)*abs(sigma))))*math.exp(old_div(-u*u,2))
         return y
+
+    def calc_srs(self,raw_probs):
+        log_probs=[]
+        for i in raw_probs:
+            if i>0:
+                log_probs.append(math.log10(i))
+            else:
+                log_probs.append(-inf)
+        return max(log_probs)
     
     def conditional_GMM(self,condval,keystat,G):
         #keystat = 1 if want stat1|stat2, keystat = 2 if want stat2|stat1
@@ -179,7 +200,7 @@ class AODE(object):
         G = pickle.load(open(self.path2AODE+stat+'_'+scenario+'_1D_GMMparams.p','rb'))
         return G
 
-    def calculate_on_file(self,filename,pivec,outfile,A):
+    def calculate_on_file(self,filename,pivec,outfile,A,nb,ode_diagnostics):
         file = open(filename,'r')
         f = file.read()
         file.close()
@@ -193,6 +214,15 @@ class AODE(object):
             newheader += 'pi_'+s+'\t'
         for s in self.scenarios:
             newheader += 'P('+s+')'+'\t'
+        newheader += 'SRS'+'\t'
+        if ode_diagnostics:
+            for s in self.scenarios:
+                newheader += 'RawAODE_P('+s+')'+'\t'
+                for stat in self.statlist:
+                    newheader += stat + '_ODE('+s+')' + '\t'
+        if nb:
+            for s in self.scenarios:
+                newheader += 'NB_P('+s+')'+'\t'
         newheader = newheader.strip()
         out.write(newheader+'\n')
         stat2index = {}
@@ -204,22 +234,51 @@ class AODE(object):
             S = Stats(self.path2trained)
             for stat in S.stats:
                 S.stat2score[stat] = float(L[stat2index[stat]])
-            scenario_probs = A.aode(S,pivec)
+            scenario_probs, raw_probs, odes = A.aode(S,pivec)
             outtext = line+'\t'
             for i in range(len(pivec)):
                 outtext += str(pivec[i])+'\t'
             for i in range(len(self.scenarios)):
                 outtext += str(scenario_probs[i])+'\t'
+            outtext += str(A.calc_srs(raw_probs))+'\t'
+            if ode_diagnostics:
+                for i in range(len(self.scenarios)):
+                    outtext += str(raw_probs[i])+'\t'
+                    for stat in self.statlist:
+                        outtext += str(odes[self.scenarios[i]][stat])+'\t'
+            if nb:
+                nb_scores, nums, denoms = A.naive_bayes(S,pivec)
+                for i in range(len(self.scenarios)):
+                    outtext += str(nb_scores[i])+'\t'
             outtext = outtext.strip()
             out.write(outtext+'\n')
         out.close()
 
 
+    def naive_bayes(self,stats,pi):
+        #pi must have length len(scenarios)
+        Likelihoods = [1 for i in range(len(self.scenarios))] #product of P(statistic value | scenario) (for each scenario, a product across all statistics)
+        for stat in self.statlist:
+            score = stats.stat2score[stat] #value of statistic
+            MARGS = self.MARGINALS[self.stat2num[stat]] #1-D distributions learned from SWIFr
+            for i in range(len(self.scenarios)):
+                M = MARGS[i] #distribution for scenario and stat
+                Likelihoods[i] = Likelihoods[i]*self.GMM_pdf(M,score)
+        numerators = [pi[i]*Likelihoods[i] for i in range(len(self.scenarios))] #multiply by prior scenario probs
+        denominator = sum(numerators) #normalization
+        # print(posteriors)
+        # print(numerators)
+        # print(denominator)
+        if denominator == 0:
+            return [0 for i in range(len(numerators))],numerators, denominator
+        else:
+            posteriors = [float(numerators[i])/denominator for i in range(len(numerators))]
+            return posteriors, numerators, denominator
 
 
 
 
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 def main():
 
     parser = argparse.ArgumentParser()
@@ -228,13 +287,15 @@ def main():
     parser.add_argument('--file',action='store',dest='filename') #use instead of interactive mode to work on a whole file
     parser.add_argument('--pi',action='store',nargs='+',default=['0.99999','0.00001']) #can use with either mode
     parser.add_argument('--outfile',action='store',default='')
+    parser.add_argument('--nb',action='store_true',dest='nb',default=False) #run naive bayes
+    parser.add_argument('--ode',action='store_true',dest='ode',default=False) #output non-normalized AODE output and inidividual ODE scores
     args = parser.parse_args()
      
     if not args.interactive and not args.filename:
         print("Error: SWIF(r) must be run either with an input file using --file or in " \
              + "interactive mode using --interactive.")
         print("Please try running the program again.")
-        
+    
     else:
         A = AODE(args.path2trained)
     
@@ -262,8 +323,7 @@ def main():
                 else:
                     if args.outfile == '':
                         args.outfile = args.filename.replace('.txt','')+'_classified'
-                    A.calculate_on_file(args.filename,pivec,args.outfile, A)
-
+                    A.calculate_on_file(args.filename,pivec,args.outfile, A, args.nb, args.ode)
 
 
 
