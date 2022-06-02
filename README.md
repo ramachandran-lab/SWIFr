@@ -92,7 +92,7 @@ If you wish to change the number of Gaussian mixture components based on the BIC
 
 
 ### Running SWIF(r) on testing data:
-#### Usage (note that for version 1, use swifr_test):  
+#### Usage:  
 \>swifr_test
 
 #### Command Line Options:
