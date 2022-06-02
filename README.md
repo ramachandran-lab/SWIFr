@@ -1,10 +1,11 @@
 # SWIF(r): SWeep Inference Framework (controlling for correlation)
 
-SWIF(r) Version 2.0.2
-July 2020
+SWIF(r) Version 2.1.1
 Lauren Alpert Sugden, Kaileigh Ahlquist, Joseph Paik, Ramachandran Lab, Brown University
 
 Publication: Sugden, Lauren Alpert, Elizabeth G. Atkinson, Annie P. Fischer, Stephen Rong, Brenna M. Henn, and Sohini Ramachandran. "Localization of adaptive variants in human genomes using averaged one-dependence estimation." Nature communications 9, no. 1 (2018): 703.
+
+Ahlquist, K.D., Lauren Sugden, and Sohini Ramachandran. "Enabling interpretable machine learning for biological data with reliability scores." https://doi.org/10.1101/2022.02.18.481082
 
 Questions: post a git issue or contact sugdenl@duq.edu, kaileigh_ahlquist@brown.edu, joseph_paik@alumni.brown.edu.
 
@@ -85,7 +86,7 @@ File hierarchy:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default: false  
 
 #### Output:
-The output of swifr_train creates three directories:  AODE_params/ which contains the parameter files that swifr_test will use, component_statistic_distributions/ which contains illustrations of the learned marginal (1D) and joint (2D) distributions, and BIC_plots/ which contains Bayesian Information Criterion curves (https://en.wikipedia.org/wiki/Bayesian_information_criterion) that SWIF(r) uses to learn the number of components for the gaussian mixtures for each of the 1- and 2-dimensional component statistic distributions. The BIC balances model complexity with fit, so that the optimal number of components is the one that minimizes the BIC. SWIF(r) automatically chooses the number of components between 1 and 10 that defines this minimum. The number chosen is highlighted in pink in the pdf files in BIC_plots/.  
+The output of swifr_train creates three directories:  AODE_params/ which contains the parameter files that swifr_test will use, component_statistic_distributions/ which contains illustrations of the learned marginal (1D) and joint (2D) distributions, and BIC_plots/ which contains Bayesian Information Criterion curves (https://en.wikipedia.org/wiki/Bayesian_information_criterion) that SWIF(r) uses to learn the number of components for the gaussian mixtures for each of the 1- and 2-dimensional component statistic distributions. The BIC balances model complexity with fit, so that the optimal number of components is the one that minimizes the BIC. SWIF(r) automatically chooses the number of components between 1 and 5 that defines this minimum. The number chosen is highlighted in pink in the pdf files in BIC_plots/.  
 
 If you wish to change the number of Gaussian mixture components based on the BIC curves (filenames in BIC_plots/ contain the statistic or pair of statistics, and the class), you can edit the file joint_component_nums and/or marginal_component_nums in the AODE_params/ directory, then re-run swifr_train with the flag --retrain. This will regenerate the files in AODE_params/, BIC_plots/, and component_statistic_distributions/.  
 
