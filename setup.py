@@ -23,7 +23,7 @@ setuptools.setup(
            #'matplotlib==3.0.2',
             'matplotlib==2.1.2',
            #'numpy==1.17.0',
-            'numpy>=1.16.6',
+            'numpy==1.16.6',
             'pyparsing==2.4.2',
             'python-dateutil==2.8.0',
            #'scikit-learn==0.21.3',
