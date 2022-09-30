@@ -18,7 +18,7 @@ setuptools.setup(
    install_requires=[
            'cycler==0.10.0',
            'future==0.17.1',
-            'joblib==0.13.2',
+            'joblib==1.2.0',
             'kiwisolver==1.1.0',
            #'matplotlib==3.0.2',
             'matplotlib==2.1.2',
