@@ -10,8 +10,9 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import numpy as np
 from sklearn import mixture
-from matplotlib.mlab import bivariate_normal
-from matplotlib.mlab import normpdf
+#from matplotlib.mlab import bivariate_normal
+from scipy.stats import multivariate_normal
+from scipy.stats import norm
 import matplotlib.cm as cm
 import warnings
 import matplotlib.cbook
@@ -250,7 +251,7 @@ class AODE_train(object):
             x = np.linspace(minscore,maxscore,100)
             Z = 0
             for i in range(len(w)):
-                Z = Z + w[i]*normpdf(x,mu[i],sigma[i])
+                Z = Z + w[i]*norm.pdf(x,mu[i],sigma[i])
             plt.plot(x,Z[0],self.colors[self.scenarios.index(scenario)%len(self.colors)])
         plt.xlabel(stat)
         plt.ylabel('frequency')
@@ -277,7 +278,9 @@ class AODE_train(object):
             X,Y = np.meshgrid(x,y)
             Z = 0
             for i in range(len(w)):
-                Z = Z + w[i]*bivariate_normal(X,Y,mux=mu[i][0],muy=mu[i][1],sigmax=math.sqrt(sigma[i][0][0]),sigmay=math.sqrt(sigma[i][1][1]),sigmaxy=sigma[i][0][1])
+                #Z = Z + w[i]*bivariate_normal(X,Y, mux=mu[i][0], muy=mu[i][1], sigmax=math.sqrt(sigma[i][0][0]), sigmay=math.sqrt(sigma[i][1][1]), sigmaxy=sigma[i][0][1])
+                rv = multivariate_normal([mu[i][0], mu[i][1]], [[math.sqrt(sigma[i][0][0]), sigma[i][0][1]], [sigma[i][0][1], math.sqrt(sigma[i][1][1])]])
+                Z = rv.pdf(np.dstack((X, Y)))
             C = plt.contour(X,Y,Z,10,cmap=self.colorspectra[self.scenarios.index(scenario)%len(self.colorspectra)])
 
         plt.xlabel(stat1)
@@ -324,7 +327,7 @@ class AODE_train(object):
 def main():
     
     #suppress matplotlib deprecation warnings
-    warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
+    #warnings.filterwarnings("ignore", category=matplotlib.cbook.mplDeprecation)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--path',action='store',dest='path2files',default='') #path to all input files (simulations in a 'simulations' directory, and compstats, scenarios files)

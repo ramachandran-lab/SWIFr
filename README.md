@@ -1,5 +1,15 @@
 # SWIF(r): SWeep Inference Framework (controlling for correlation)
 
+_Update as of 06/26/2024_: 
+
+SWIF(r) Version 2.2.1
+- Python 3.10 or greater compatibility
+- use \> pip install swifr 
+
+Questions? Contact hannah_snell@brown.edu
+
+----------------------------------------------
+
 SWIF(r) Version 2.1.1
 Lauren Alpert Sugden, Kaileigh Ahlquist, Joseph Paik, Ramachandran Lab, Brown University
 
@@ -10,6 +20,7 @@ Ahlquist, K.D., Lauren Sugden, and Sohini Ramachandran. "Enabling interpretable 
 Questions: post a git issue or contact sugdenl@duq.edu, kaileigh_ahlquist@brown.edu, joseph_paik@alumni.brown.edu.
 
 ### Updates:  
+
 This version of SWIF(r) is an update to SWIF(r) Version 1 released in 2017. The new updates to SWIF(r) include:
 
 (1) Both Python2 and Python3 compatibility (tested with Python versions 2.7 <= x <= 3.7). 

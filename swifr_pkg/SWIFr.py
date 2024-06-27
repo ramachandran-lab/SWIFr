@@ -167,7 +167,7 @@ class AODE(object):
             if i>0:
                 log_probs.append(math.log10(i))
             else:
-                log_probs.append(-inf)
+                log_probs.append(float('-inf'))
         return max(log_probs)
     
     def conditional_GMM(self,condval,keystat,G):
