@@ -17,6 +17,7 @@ import matplotlib.cm as cm
 import warnings
 import matplotlib.cbook
 
+
 class AODE_train(object):
     '''
     Given directory with component_stats.txt, scenarios.txt, and subdirectory simulations/
@@ -265,6 +266,7 @@ class AODE_train(object):
         legendlocations = {x:[] for x in self.scenarios}
         for scenario in self.scenarios:
             G = self.gmm_fit(stat1,stat2,scenario)
+            Cov = G.covariances_
             mu = G.means_
             sigma = G.covariances_
             legendlocations[scenario] = [mu[0][0]+.2*sigma[0][0][0],mu[0][1]+.2*sigma[0][1][1]]            
@@ -278,9 +280,7 @@ class AODE_train(object):
             X,Y = np.meshgrid(x,y)
             Z = 0
             for i in range(len(w)):
-                #Z = Z + w[i]*bivariate_normal(X,Y, mux=mu[i][0], muy=mu[i][1], sigmax=math.sqrt(sigma[i][0][0]), sigmay=math.sqrt(sigma[i][1][1]), sigmaxy=sigma[i][0][1])
-                rv = multivariate_normal([mu[i][0], mu[i][1]], [[math.sqrt(sigma[i][0][0]), sigma[i][0][1]], [sigma[i][0][1], math.sqrt(sigma[i][1][1])]])
-                Z = rv.pdf(np.dstack((X, Y)))
+                Z = Z + w[i]*self.bivariate_normal(X,Y, mux=mu[i][0], muy=mu[i][1], sigmax=math.sqrt(sigma[i][0][0]), sigmay=math.sqrt(sigma[i][1][1]), sigmaxy=sigma[i][0][1])
             C = plt.contour(X,Y,Z,10,cmap=self.colorspectra[self.scenarios.index(scenario)%len(self.colorspectra)])
 
         plt.xlabel(stat1)
@@ -289,6 +289,25 @@ class AODE_train(object):
             plt.text(legendlocations[scenario][0],legendlocations[scenario][1],scenario,color=self.colors[self.scenarios.index(scenario)%len(self.colors)])
         plt.savefig(self.path2files+'component_statistic_distributions/joints/'+stat1+'_'+stat2+'_joint.pdf')
         plt.clf()
+
+    def bivariate_normal(self, X, Y, sigmax=1.0, sigmay=1.0, mux=0.0, muy=0.0, sigmaxy=0.0):
+        """
+        redefining bivariate_normal() since it is deprecated in newer versions of matplotlib
+
+        Bivariate Gaussian distribution for equal shape *X*, *Y*.
+        See `bivariate normal
+        <http://mathworld.wolfram.com/BivariateNormalDistribution.html>`_
+        at mathworld.
+
+        Source: https://stackoverflow.com/questions/64780530/attributeerror-module-matplotlib-mlab-has-no-attribute-bivariate-normal 
+        """
+        Xmu = X-mux
+        Ymu = Y-muy
+
+        rho = sigmaxy/(sigmax*sigmay)
+        z = Xmu**2/sigmax**2 + Ymu**2/sigmay**2 - 2*rho*Xmu*Ymu/(sigmax*sigmay)
+        denom = 2*np.pi*sigmax*sigmay*np.sqrt(1-rho**2)
+        return np.exp(-z/(2*(1-rho**2))) / denom
 
     def plot_contours(self):
         for i in range(len(self.statlist)-1):

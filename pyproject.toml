@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "swifr"
-version = "2.2.1"
+version = "2.2.2"
 description = "SWIF(r) - SWeep Inference Framework(controlling for correlation) - package for detecting adaptation in population data"
 authors = ["Lauren Alpert Sugden <lauren.v.sugden@gmail.com>", "Kaileigh Ahlquist", "Joseph Paik", "Sohini Ramachandran"]
 license = "GPL-3.0"
@@ -13,13 +13,13 @@ packages = [{ include = "swifr_pkg" }]
 python = ">=3.10,<4.0"
 numpy = "1.26.4"
 pyparsing = "2.4.2"
-matplotlib = "^3.9.0"
 cycler = "^0.12.1"
 python-dateutil = "^2.9.0.post0"
 six = "^1.16.0"
 future = "^1.0.0"
 scikit-learn = "^1.5.0"
 scipy = "^1.14.0"
+matplotlib = "^3.9.1"
 
 [tool.poetry.scripts]
 swifr_train = "swifr_pkg.SWIFr_train:main"

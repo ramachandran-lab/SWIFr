@@ -1,10 +1,10 @@
 # SWIF(r): SWeep Inference Framework (controlling for correlation)
 
-_Update as of 06/26/2024_: 
+_Update as of 07/10/2024_: 
 
-SWIF(r) Version 2.2.1
+SWIF(r) Version 2.2.2
 - Python 3.10 or greater compatibility
-- use \> pip install swifr 
+- use `pip install swifr`
 
 Questions? Contact hannah_snell@brown.edu
 
